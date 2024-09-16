@@ -1,4 +1,3 @@
-import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 
 import path from 'node:path';
@@ -27,7 +26,7 @@ export default {
       {
         test: /\.scss$/,
         use: [
-          MiniCssExtractPlugin.loader,
+          'style-loader',
           'css-loader',
           'sass-loader',
           {
@@ -54,9 +53,6 @@ export default {
     new HtmlWebpackPlugin({
       template: './index.html',
       filename: 'index.html',
-    }),
-    new MiniCssExtractPlugin({
-      filename: '[name].[contenthash].css',
     }),
   ],
   output: {
