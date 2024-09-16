@@ -1,4 +1,6 @@
+import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
+
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -25,10 +27,9 @@ export default {
       {
         test: /\.scss$/,
         use: [
-          'style-loader',
+          MiniCssExtractPlugin.loader,
           'css-loader',
           'sass-loader',
-          'postcss-loader',
           {
             loader: 'sass-loader',
             options: {
@@ -51,18 +52,21 @@ export default {
   },
   plugins: [
     new HtmlWebpackPlugin({
-      template: './index.html', // путь к существующему index.html
-      filename: 'index.html', // выходной HTML-файл
+      template: './index.html',
+      filename: 'index.html',
+    }),
+    new MiniCssExtractPlugin({
+      filename: '[name].[contenthash].css',
     }),
   ],
   output: {
-    filename: 'bundle.js', // имя выходного JS-файла
-    path: path.resolve(__dirname, 'dist'), // путь к директории сборки
+    filename: 'bundle.js',
+    path: path.resolve(__dirname, 'dist'),
     clean: true,
   },
   devServer: {
     static: {
-      directory: path.resolve(__dirname, 'dist'), // Путь для статики
+      directory: path.resolve(__dirname, 'dist'),
     },
     hot: true,
     open: true,
