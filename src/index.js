@@ -1,4 +1,4 @@
 import './styles.scss';
-import 'bootstrap';
+import * as bootstrap from 'bootstrap';
 
 console.log('RSS Aggregator...');
