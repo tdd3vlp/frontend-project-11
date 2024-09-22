@@ -1,14 +1,39 @@
 import onChange from 'on-change';
 
-export default (elements, state) => {
-  const render = () => {};
+export default (elements, initialState) => {
+  const handleFormState = (value) => {
+    const { input } = elements;
+    switch (value) {
+      case true:
+        input.classList.remove('is-invalid');
+        break;
+      case false:
+        input.classList.add('is-invalid');
+        break;
+      default:
+        break;
+    }
+  };
 
-  const watchedState = onChange(state, (path, value) => {
-    console.log(path);
-    console.log(value);
-  });
+  const handleFormErrors = (value) => {
+    const { feedback } = elements;
+    const { message } = value;
 
-  render();
+    feedback.textContent = message;
+  };
 
-  return watchedState;
+  const render = () => (path, value) => {
+    switch (path) {
+      case 'form.isValid':
+        handleFormState(value);
+        break;
+      case 'form.errors':
+        handleFormErrors(value);
+        break;
+      default:
+        break;
+    }
+  };
+
+  return onChange(initialState, render(elements, initialState));
 };
