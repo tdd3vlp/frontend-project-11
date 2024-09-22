@@ -1,13 +1,14 @@
 import onChange from 'on-change';
 
 export default (elements, state) => {
-  console.log('Elements: ', elements);
-  console.log('State: ', state);
+  const render = () => {};
 
   const watchedState = onChange(state, (path, value) => {
-    console.log('Path: ', path);
-    console.log('Value: ', value);
+    console.log(path);
+    console.log(value);
   });
+
+  render();
 
   return watchedState;
 };
