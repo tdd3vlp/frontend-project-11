@@ -15,35 +15,25 @@ const validateUrl = (url, feeds) => {
 };
 
 export default () => {
-  // ! LOCALES
-  const i18n = i18next.createInstance();
-
-  i18n.init({
-    use: LanguageDetector,
-    resources,
-    fallbackLng: 'en',
-    debug: true,
-  });
-
   //   ! ELEMENTS
   const elements = {
     form: document.querySelector('form'),
     heading: document.querySelector('h1'),
+    input: document.querySelector('input'),
     label: document.querySelector('label'),
-    button: document.querySelector('button[type="submit"]'),
     subheading: document.querySelector('.lead'),
     feedback: document.querySelector('.feedback'),
+    button: document.querySelector('button[type="submit"]'),
   };
 
-  i18n.changeLanguage('ru', (err, t) => {
-    const { heading, subheading, button, label } = elements;
+  // ! LOCALES
+  const i18nInstance = i18next.createInstance();
 
-    if (err) return console.log(err);
-
-    heading.textContent = t('heading');
-    subheading.textContent = t('subheading');
-    button.textContent = t('button');
-    label.textContent = t('label');
+  i18nInstance.init({
+    use: LanguageDetector,
+    resources,
+    fallbackLng: 'ru',
+    debug: true,
   });
 
   // ! STATE
@@ -67,7 +57,7 @@ export default () => {
     posts: [],
   };
 
-  const state = watchedState(elements, i18n, initialState);
+  const state = watchedState(elements, i18nInstance, initialState);
 
   //   ! CONTROLLER
   const { form, input } = elements;
@@ -86,7 +76,6 @@ export default () => {
       })
       .catch((validationError) => {
         state.form.errors = validationError;
-        console.log(state.form.errors);
         state.form.isValid = false;
       });
 

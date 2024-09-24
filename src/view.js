@@ -1,6 +1,6 @@
 import onChange from 'on-change';
 
-export default (elements, i18n, initialState) => {
+export default (elements, i18next, initialState) => {
   // ! FUNCTIONS
   const handleFormState = (value) => {
     const { input } = elements;
@@ -16,11 +16,32 @@ export default (elements, i18n, initialState) => {
     }
   };
 
-  const handleFormErrors = (value) => {
+  const handleFormErrors = (error) => {
     const { feedback } = elements;
-    const { message } = value;
+    const { message } = error;
 
-    feedback.textContent = message;
+    if (Object.keys(error).length == 0) {
+      feedback.textContent = message;
+    }
+    if (message === 'Enter correct URL') {
+      feedback.textContent = i18next.t('correctURL');
+    }
+    if (message === 'URL already used...') {
+      feedback.textContent = i18next.t('usedURL');
+    }
+  };
+
+  const changeLanguage = (language) => {
+    i18next.changeLanguage(language, (err, t) => {
+      const { heading, subheading, button, label } = elements;
+
+      if (err) return console.log(err);
+
+      heading.textContent = t('heading');
+      subheading.textContent = t('subheading');
+      button.textContent = t('button');
+      label.textContent = t('label');
+    });
   };
 
   // ! RENDER
@@ -31,6 +52,9 @@ export default (elements, i18n, initialState) => {
         break;
       case 'form.errors':
         handleFormErrors(value);
+        break;
+      case 'form.activeLanguage':
+        changeLanguage(value);
         break;
       default:
         break;
