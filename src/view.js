@@ -1,6 +1,7 @@
 import onChange from 'on-change';
 
-export default (elements, initialState) => {
+export default (elements, i18n, initialState) => {
+  // ! FUNCTIONS
   const handleFormState = (value) => {
     const { input } = elements;
     switch (value) {
@@ -22,6 +23,7 @@ export default (elements, initialState) => {
     feedback.textContent = message;
   };
 
+  // ! RENDER
   const render = () => (path, value) => {
     switch (path) {
       case 'form.isValid':

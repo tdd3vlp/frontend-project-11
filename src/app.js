@@ -1,5 +1,8 @@
 import * as yup from 'yup';
-import watch from './view.js';
+import i18next from 'i18next';
+import LanguageDetector from 'i18next-browser-languagedetector';
+import watchedState from './view.js';
+import resources from './locales/index.js';
 import './styles.scss';
 import 'bootstrap';
 
@@ -12,16 +15,41 @@ const validateUrl = (url, feeds) => {
 };
 
 export default () => {
-  //   ELEMENTS
+  // ! LOCALES
+  const i18n = i18next.createInstance();
+
+  i18n.init({
+    use: LanguageDetector,
+    resources,
+    fallbackLng: 'en',
+    debug: true,
+  });
+
+  //   ! ELEMENTS
   const elements = {
     form: document.querySelector('form'),
-    input: document.querySelector('input'),
+    heading: document.querySelector('h1'),
+    label: document.querySelector('label'),
+    button: document.querySelector('button[type="submit"]'),
+    subheading: document.querySelector('.lead'),
     feedback: document.querySelector('.feedback'),
   };
 
-  // STATE
+  i18n.changeLanguage('ru', (err, t) => {
+    const { heading, subheading, button, label } = elements;
+
+    if (err) return console.log(err);
+
+    heading.textContent = t('heading');
+    subheading.textContent = t('subheading');
+    button.textContent = t('button');
+    label.textContent = t('label');
+  });
+
+  // ! STATE
   const initialState = {
     form: {
+      activeLanguage: 'ru',
       isValid: true,
       fields: {
         url: '',
@@ -39,9 +67,9 @@ export default () => {
     posts: [],
   };
 
-  const state = watch(elements, initialState);
+  const state = watchedState(elements, i18n, initialState);
 
-  //   CONTROLLER
+  //   ! CONTROLLER
   const { form, input } = elements;
 
   function handleSubmit(e) {
@@ -58,6 +86,7 @@ export default () => {
       })
       .catch((validationError) => {
         state.form.errors = validationError;
+        console.log(state.form.errors);
         state.form.isValid = false;
       });
 
