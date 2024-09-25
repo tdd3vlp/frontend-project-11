@@ -8,7 +8,7 @@ import 'bootstrap';
 
 const validateUrl = (url, feeds) => {
   const schema = yup.object().shape({
-    url: yup.string().url('Enter correct URL').notOneOf(feeds, 'URL already used...'),
+    url: yup.string().url('invalidUrl').notOneOf(feeds, 'alreadyExists'),
   });
 
   return schema.validate({ url });
@@ -29,59 +29,68 @@ export default () => {
   // ! LOCALES
   const i18nInstance = i18next.createInstance();
 
-  i18nInstance.init({
-    use: LanguageDetector,
-    resources,
-    fallbackLng: 'ru',
-    debug: true,
-  });
+  i18nInstance
+    .init({
+      use: LanguageDetector,
+      resources,
+      fallbackLng: 'ru',
+      debug: false,
+    })
+    .then(() => {
+      // ! STATE
+      const initialState = {
+        form: {
+          activeLanguage: 'ru',
+          isValid: true,
+          fields: {
+            url: '',
+          },
+          errors: {},
+        },
+        loadingProcess: {
+          status: { loading: 'loading', success: 'success', fail: 'fail' },
+          errors: [],
+        },
+        uiState: {
+          seenPosts: {},
+        },
+        feeds: [],
+        posts: [],
+      };
 
-  // ! STATE
-  const initialState = {
-    form: {
-      activeLanguage: 'ru',
-      isValid: true,
-      fields: {
-        url: '',
-      },
-      errors: {},
-    },
-    loadingProcess: {
-      status: { loading: 'loading', success: 'success', fail: 'fail' },
-      errors: [],
-    },
-    uiState: {
-      seenPosts: {},
-    },
-    feeds: [],
-    posts: [],
-  };
+      const state = watchedState(elements, i18nInstance, initialState);
 
-  const state = watchedState(elements, i18nInstance, initialState);
+      //   ! CONTROLLER
+      const { form, input } = elements;
 
-  //   ! CONTROLLER
-  const { form, input } = elements;
+      function handleSubmit(e) {
+        e.preventDefault();
 
-  function handleSubmit(e) {
-    e.preventDefault();
+        const value = new FormData(e.target).get('url');
+        state.form.fields.url = value;
 
-    const value = new FormData(e.target).get('url');
-    state.form.fields.url = value;
+        validateUrl(state.form.fields.url, state.feeds)
+          .then(() => {
+            state.form.errors = {};
+            state.form.isValid = true;
+            state.feeds.push(state.form.fields.url);
+          })
+          .catch((validationError) => {
+            if (validationError.message === 'invalidUrl') {
+              state.form.errors = i18nInstance.t('invalidRss');
+            } else if (validationError.message === 'alreadyExists') {
+              state.form.errors = i18nInstance.t('rssExists');
+            }
+            state.form.isValid = false;
+          });
 
-    validateUrl(state.form.fields.url, state.feeds)
-      .then(() => {
-        state.form.errors = {};
-        state.form.isValid = true;
-        state.feeds.push(state.form.fields.url);
-      })
-      .catch((validationError) => {
-        state.form.errors = validationError;
-        state.form.isValid = false;
-      });
+        form.reset();
+        input.focus();
+      }
 
-    form.reset();
-    input.focus();
-  }
-
-  form.addEventListener('submit', handleSubmit);
+      form.addEventListener('submit', handleSubmit);
+    })
+    .catch((err) => {
+      console.log('i18next initialization error', err);
+    });
 };

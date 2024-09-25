@@ -4,7 +4,7 @@ export default {
     subheading: 'Начните читать RSS сегодня! Это легко, это красиво.',
     label: 'Ссылка RSS',
     button: 'Добавить',
-    correctURL: 'Ссылка должна быть валидным URL',
-    usedURL: 'RSS уже существует',
+    invalidRss: 'Ссылка должна быть валидным URL',
+    rssExists: 'RSS уже существует',
   },
 };

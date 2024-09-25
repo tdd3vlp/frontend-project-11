@@ -18,16 +18,11 @@ export default (elements, i18next, initialState) => {
 
   const handleFormErrors = (error) => {
     const { feedback } = elements;
-    const { message } = error;
 
-    if (Object.keys(error).length == 0) {
-      feedback.textContent = message;
-    }
-    if (message === 'Enter correct URL') {
-      feedback.textContent = i18next.t('correctURL');
-    }
-    if (message === 'URL already used...') {
-      feedback.textContent = i18next.t('usedURL');
+    if (Object.keys(error).length === 0) {
+      feedback.textContent = '';
+    } else {
+      feedback.textContent = error;
     }
   };
 
@@ -37,10 +32,10 @@ export default (elements, i18next, initialState) => {
 
       if (err) return console.log(err);
 
+      label.textContent = t('label');
+      button.textContent = t('button');
       heading.textContent = t('heading');
       subheading.textContent = t('subheading');
-      button.textContent = t('button');
-      label.textContent = t('label');
     });
   };
 
