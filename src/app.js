@@ -6,16 +6,26 @@ import resources from './locales/index.js';
 import './styles.scss';
 import 'bootstrap';
 
+// Yup rules
+yup.setLocale({
+  string: {
+    url: ({ url }) => ({ key: 'invalidRss', values: { url } }),
+  },
+  mixed: {
+    notOneOf: ({ values }) => ({ key: 'rssExists', values: { values } }),
+  },
+});
+
 const validateUrl = (url, feeds) => {
   const schema = yup.object().shape({
-    url: yup.string().url('invalidUrl').notOneOf(feeds, 'alreadyExists'),
+    url: yup.string().url().notOneOf(feeds),
   });
 
   return schema.validate({ url });
 };
 
+// App
 export default () => {
-  //   ! ELEMENTS
   const elements = {
     form: document.querySelector('form'),
     heading: document.querySelector('h1'),
@@ -26,18 +36,18 @@ export default () => {
     button: document.querySelector('button[type="submit"]'),
   };
 
-  // ! LOCALES
+  // Locales
   const i18nInstance = i18next.createInstance();
 
   i18nInstance
+    .use(LanguageDetector)
     .init({
-      use: LanguageDetector,
       resources,
       fallbackLng: 'ru',
       debug: false,
     })
     .then(() => {
-      // ! STATE
+      // State
       const initialState = {
         form: {
           activeLanguage: 'ru',
@@ -57,13 +67,13 @@ export default () => {
         feeds: [],
         posts: [],
       };
-
+      // Watched state
       const state = watchedState(elements, i18nInstance, initialState);
 
-      //   ! CONTROLLER
+      // Controller
       const { form, input } = elements;
 
-      function handleSubmit(e) {
+      const handleSubmit = (e) => {
         e.preventDefault();
 
         const value = new FormData(e.target).get('url');
@@ -71,26 +81,25 @@ export default () => {
 
         validateUrl(state.form.fields.url, state.feeds)
           .then(() => {
+            // Validation successful
             state.form.errors = {};
             state.form.isValid = true;
             state.feeds.push(state.form.fields.url);
           })
           .catch((validationError) => {
-            if (validationError.message === 'invalidUrl') {
-              state.form.errors = i18nInstance.t('invalidRss');
-            } else if (validationError.message === 'alreadyExists') {
-              state.form.errors = i18nInstance.t('rssExists');
-            }
+            // Validation failed
+            const message = validationError.errors[0].key;
+            state.form.errors = i18nInstance.t(`errors.${message}`);
             state.form.isValid = false;
           });
 
         form.reset();
         input.focus();
-      }
+      };
 
       form.addEventListener('submit', handleSubmit);
     })
-    .catch((err) => {
-      console.log('i18next initialization error', err);
+    .catch((error) => {
+      console.log('i18next initialization error', error);
     });
 };

@@ -1,7 +1,7 @@
 import onChange from 'on-change';
 
 export default (elements, i18next, initialState) => {
-  // ! FUNCTIONS
+  // Handle functions
   const handleFormState = (value) => {
     const { input } = elements;
     switch (value) {
@@ -27,6 +27,7 @@ export default (elements, i18next, initialState) => {
   };
 
   const changeLanguage = (language) => {
+    console.log(language);
     i18next.changeLanguage(language, (err, t) => {
       const { heading, subheading, button, label } = elements;
 
@@ -39,7 +40,7 @@ export default (elements, i18next, initialState) => {
     });
   };
 
-  // ! RENDER
+  //  Render
   const render = () => (path, value) => {
     switch (path) {
       case 'form.isValid':

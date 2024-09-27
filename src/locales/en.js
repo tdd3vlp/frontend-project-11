@@ -4,7 +4,9 @@ export default {
     subheading: 'Start reading today. Easy and comfortable',
     label: 'RSS Link',
     button: 'Add',
-    invalidRss: 'Enter correct URL',
-    rssExists: 'URL already used...',
+    errors: {
+      invalidRss: 'Enter correct URL',
+      rssExists: 'URL already used...',
+    },
   },
 };
