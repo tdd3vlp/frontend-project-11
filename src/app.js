@@ -97,8 +97,8 @@ export default () => {
         validateUrl(state.form.fields.url, state.usedLinks)
           .then(() => {
             // Validation successful
-            state.form.errors = {};
             state.form.isValid = true;
+            state.form.errors = {};
             state.usedLinks.push(state.form.fields.url);
 
             loadFeed(state.form.fields.url)
@@ -114,9 +114,9 @@ export default () => {
           })
           .catch((validationError) => {
             // Validation failed
+            state.form.isValid = false;
             const message = validationError.errors[0].key;
             state.form.errors = i18nInstance.t(`errors.${message}`);
-            state.form.isValid = false;
           });
 
         form.reset();

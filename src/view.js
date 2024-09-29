@@ -2,6 +2,19 @@ import onChange from 'on-change';
 
 export default (elements, i18next, initialState) => {
   // Handle functions
+  const changeLanguage = (language) => {
+    i18next.changeLanguage(language, (err, t) => {
+      const { heading, subheading, button, label } = elements;
+
+      if (err) return console.log(err);
+
+      label.textContent = t('label');
+      button.textContent = t('button');
+      heading.textContent = t('heading');
+      subheading.textContent = t('subheading');
+    });
+  };
+
   const handleFormState = (value) => {
     const { input, feedback } = elements;
     switch (value) {
@@ -31,18 +44,7 @@ export default (elements, i18next, initialState) => {
     }
   };
 
-  const changeLanguage = (language) => {
-    i18next.changeLanguage(language, (err, t) => {
-      const { heading, subheading, button, label } = elements;
-
-      if (err) return console.log(err);
-
-      label.textContent = t('label');
-      button.textContent = t('button');
-      heading.textContent = t('heading');
-      subheading.textContent = t('subheading');
-    });
-  };
+  const createList = () => {};
 
   //  Render
   const render = () => (path, value) => {
@@ -57,7 +59,7 @@ export default (elements, i18next, initialState) => {
         changeLanguage(value);
         break;
       case 'feeds':
-        console.log('Feeds array changed');
+        createList(value);
         break;
       default:
         break;
