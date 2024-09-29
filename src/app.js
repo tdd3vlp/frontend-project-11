@@ -9,18 +9,6 @@ import resources from './locales/index.js';
 import watchedState from './view.js';
 import elements from '../utils/elements.js';
 
-// Functions
-const loadFeed = (url) => {
-  try {
-    const response = axios.get(`https://allorigins.hexlet.app/get?url=${encodeURIComponent(url)}`);
-    const data = response.then((content) => content.data);
-    return data;
-  } catch (loadError) {
-    console.log('Load error:', loadError);
-    throw loadError;
-  }
-};
-
 // Yup rules
 yup.setLocale({
   string: {
@@ -63,6 +51,7 @@ export default () => {
           errors: {},
         },
         loadingProcess: {
+          currentStatus: '',
           status: { loading: 'loading', success: 'success', fail: 'fail' },
           errors: [],
         },
@@ -75,6 +64,26 @@ export default () => {
       };
       // Watched state
       const state = watchedState(elements, i18nInstance, initialState);
+
+      // Functions
+      const loadFeed = (url) => {
+        const { loadingProcess } = state;
+        loadingProcess.currentStatus = loadingProcess.status.loading;
+
+        try {
+          const response = axios.get(
+            `https://allorigins.hexlet.app/get?url=${encodeURIComponent(url)}`,
+          );
+
+          const data = response.then((content) => content.data);
+          loadingProcess.currentStatus = loadingProcess.status.success;
+          return data;
+        } catch (loadError) {
+          loadingProcess.currentStatus = loadingProcess.status.fail;
+          loadingProcess.errors.push(error.message);
+          throw loadError;
+        }
+      };
 
       // Controller
       const { form, input } = elements;
@@ -89,15 +98,14 @@ export default () => {
           .then(() => {
             // Validation successful
             state.form.errors = {};
-            // * Set url as valid
             state.form.isValid = true;
-            // * Write url to state
             state.usedLinks.push(state.form.fields.url);
-            // * Handle successful validation
+
             loadFeed(state.form.fields.url)
               .then((content) => {
                 const parsedFeeds = parse(content);
                 state.feeds.push(...parsedFeeds);
+                state.form.errors = i18nInstance.t(`errors.rssLoaded`);
               })
               .catch((parseError) => {
                 console.log('Parse error:', parseError);

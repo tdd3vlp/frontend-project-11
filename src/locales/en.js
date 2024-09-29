@@ -7,6 +7,7 @@ export default {
     errors: {
       invalidRss: 'Enter correct URL',
       rssExists: 'URL already used...',
+      rssLoaded: 'RSS loaded successfuly',
     },
   },
 };

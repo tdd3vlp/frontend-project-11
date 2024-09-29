@@ -3,13 +3,17 @@ import onChange from 'on-change';
 export default (elements, i18next, initialState) => {
   // Handle functions
   const handleFormState = (value) => {
-    const { input } = elements;
+    const { input, feedback } = elements;
     switch (value) {
       case true:
         input.classList.remove('is-invalid');
+        feedback.classList.add('text-success');
+        feedback.classList.remove('text-danger');
         break;
       case false:
         input.classList.add('is-invalid');
+        feedback.classList.add('text-danger');
+        feedback.classList.remove('text-success');
         break;
       default:
         break;
@@ -17,6 +21,7 @@ export default (elements, i18next, initialState) => {
   };
 
   const handleFormErrors = (error) => {
+    console.log();
     const { feedback } = elements;
 
     if (Object.keys(error).length === 0) {
@@ -27,7 +32,6 @@ export default (elements, i18next, initialState) => {
   };
 
   const changeLanguage = (language) => {
-    console.log(language);
     i18next.changeLanguage(language, (err, t) => {
       const { heading, subheading, button, label } = elements;
 

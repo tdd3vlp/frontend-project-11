@@ -7,6 +7,7 @@ export default {
     errors: {
       invalidRss: 'Ссылка должна быть валидным URL',
       rssExists: 'RSS уже существует',
+      rssLoaded: 'RSS успешно загружен',
     },
   },
 };
