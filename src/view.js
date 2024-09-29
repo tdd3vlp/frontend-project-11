@@ -52,6 +52,9 @@ export default (elements, i18next, initialState) => {
       case 'form.activeLanguage':
         changeLanguage(value);
         break;
+      case 'feeds':
+        console.log('Feeds array changed');
+        break;
       default:
         break;
     }

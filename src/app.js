@@ -1,10 +1,25 @@
+import axios from 'axios';
 import * as yup from 'yup';
 import i18next from 'i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
-import watchedState from './view.js';
-import resources from './locales/index.js';
+import parse from './parse.js';
 import './styles.scss';
 import 'bootstrap';
+import resources from './locales/index.js';
+import watchedState from './view.js';
+import elements from '../utils/elements.js';
+
+// Functions
+const loadFeed = (url) => {
+  try {
+    const response = axios.get(`https://allorigins.hexlet.app/get?url=${encodeURIComponent(url)}`);
+    const data = response.then((content) => content.data);
+    return data;
+  } catch (loadError) {
+    console.log('Load error:', loadError);
+    throw loadError;
+  }
+};
 
 // Yup rules
 yup.setLocale({
@@ -26,16 +41,6 @@ const validateUrl = (url, feeds) => {
 
 // App
 export default () => {
-  const elements = {
-    form: document.querySelector('form'),
-    heading: document.querySelector('h1'),
-    input: document.querySelector('input'),
-    label: document.querySelector('label'),
-    subheading: document.querySelector('.lead'),
-    feedback: document.querySelector('.feedback'),
-    button: document.querySelector('button[type="submit"]'),
-  };
-
   // Locales
   const i18nInstance = i18next.createInstance();
 
@@ -64,6 +69,7 @@ export default () => {
         uiState: {
           seenPosts: {},
         },
+        usedLinks: [],
         feeds: [],
         posts: [],
       };
@@ -79,12 +85,24 @@ export default () => {
         const value = new FormData(e.target).get('url');
         state.form.fields.url = value;
 
-        validateUrl(state.form.fields.url, state.feeds)
+        validateUrl(state.form.fields.url, state.usedLinks)
           .then(() => {
             // Validation successful
             state.form.errors = {};
+            // * Set url as valid
             state.form.isValid = true;
-            state.feeds.push(state.form.fields.url);
+            // * Write url to state
+            state.usedLinks.push(state.form.fields.url);
+            // * Handle successful validation
+            loadFeed(state.form.fields.url)
+              .then((content) => {
+                const parsedFeeds = parse(content);
+                state.feeds.push(...parsedFeeds);
+              })
+              .catch((parseError) => {
+                console.log('Parse error:', parseError);
+                throw parseError;
+              });
           })
           .catch((validationError) => {
             // Validation failed
@@ -103,3 +121,5 @@ export default () => {
       console.log('i18next initialization error', error);
     });
 };
+
+// https://lorem-rss.hexlet.app/feed

@@ -38,7 +38,7 @@ export default [
       ...importPlugin.configs.recommended.rules,
     },
   },
-  ...compat.extends('airbnb-base'),
+  ...compat.extends('airbnb-base', 'airbnb'),
   {
     rules: {
       'no-underscore-dangle': [
