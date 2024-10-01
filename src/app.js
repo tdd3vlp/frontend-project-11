@@ -20,8 +20,9 @@ yup.setLocale({
 });
 
 const validateUrl = (url, feeds) => {
+  const feedUrls = feeds.map((feed) => feed.url);
   const schema = yup.object().shape({
-    url: yup.string().url().notOneOf(feeds),
+    url: yup.string().url().notOneOf(feedUrls),
   });
 
   return schema.validate({ url });
@@ -58,7 +59,6 @@ export default () => {
         uiState: {
           seenPosts: {},
         },
-        usedLinks: [],
         feeds: [],
         posts: [],
       };
@@ -66,20 +66,16 @@ export default () => {
       const state = watchedState(elements, i18nInstance, initialState);
 
       // Functions
-      const loadFeed = (url) => {
+      const loadPosts = (url) => {
         const { loadingProcess } = state;
-        loadingProcess.currentStatus = loadingProcess.status.loading;
-
+        const origins = 'https://allorigins.hexlet.app/get?url=';
+        // Start loading
         try {
-          const response = axios.get(
-            `https://allorigins.hexlet.app/get?url=${encodeURIComponent(url)}`,
-          );
-
+          const response = axios.get(`${origins}${encodeURIComponent(url)}`);
           const data = response.then((content) => content.data);
-          loadingProcess.currentStatus = loadingProcess.status.success;
           return data;
         } catch (loadError) {
-          loadingProcess.currentStatus = loadingProcess.status.fail;
+          // Loading failed
           loadingProcess.errors.push(error.message);
           throw loadError;
         }
@@ -94,23 +90,30 @@ export default () => {
         const value = new FormData(e.target).get('url');
         state.form.fields.url = value;
 
-        validateUrl(state.form.fields.url, state.usedLinks)
+        validateUrl(state.form.fields.url, state.feeds)
           .then(() => {
             // Validation successful
             state.form.isValid = true;
             state.form.errors = {};
-            state.usedLinks.push(state.form.fields.url);
 
-            loadFeed(state.form.fields.url)
-              .then((content) => {
-                const parsedFeeds = parse(content);
-                state.feeds.push(...parsedFeeds);
+            // Load posts
+            loadPosts(state.form.fields.url).then((content) => {
+              const contentType = content.status.content_type;
+
+              if (contentType.startsWith('application/rss+xml')) {
                 state.form.errors = i18nInstance.t(`errors.rssLoaded`);
-              })
-              .catch((parseError) => {
-                console.log('Parse error:', parseError);
-                throw parseError;
-              });
+
+                // If type is correct then parse
+                const parsedFeed = parse(content, state.form.fields.url);
+                const { feed, posts } = parsedFeed;
+
+                state.feeds.push(feed);
+                state.posts.push(...posts);
+              } else {
+                state.form.isValid = false;
+                state.form.errors = i18nInstance.t(`errors.noValidRss`);
+              }
+            });
           })
           .catch((validationError) => {
             // Validation failed
@@ -129,5 +132,3 @@ export default () => {
       console.log('i18next initialization error', error);
     });
 };
-
-// https://lorem-rss.hexlet.app/feed

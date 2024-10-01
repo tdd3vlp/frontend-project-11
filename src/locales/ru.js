@@ -8,6 +8,7 @@ export default {
       invalidRss: 'Ссылка должна быть валидным URL',
       rssExists: 'RSS уже существует',
       rssLoaded: 'RSS успешно загружен',
+      noValidRss: 'Ресурс не содержит валидный RSS',
     },
   },
 };

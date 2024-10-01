@@ -8,6 +8,7 @@ export default {
       invalidRss: 'Enter correct URL',
       rssExists: 'URL already used...',
       rssLoaded: 'RSS loaded successfuly',
+      noValidRss: "URL doesn't contain any valid RSS",
     },
   },
 };
