@@ -9,6 +9,7 @@ export default {
       rssExists: 'URL already used...',
       rssLoaded: 'RSS loaded successfuly',
       noValidRss: "URL doesn't contain any valid RSS",
+      responseError: 'Network error',
     },
   },
 };

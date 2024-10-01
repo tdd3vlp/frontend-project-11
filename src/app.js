@@ -1,4 +1,3 @@
-import axios from 'axios';
 import * as yup from 'yup';
 import i18next from 'i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
@@ -8,6 +7,7 @@ import 'bootstrap';
 import resources from './locales/index.js';
 import watchedState from './view.js';
 import elements from '../utils/elements.js';
+import loadPosts from '../utils/loadPosts.js';
 
 // Yup rules
 yup.setLocale({
@@ -65,55 +65,46 @@ export default () => {
       // Watched state
       const state = watchedState(elements, i18nInstance, initialState);
 
-      // Functions
-      const loadPosts = (url) => {
-        const { loadingProcess } = state;
-        const origins = 'https://allorigins.hexlet.app/get?url=';
-        // Start loading
-        try {
-          const response = axios.get(`${origins}${encodeURIComponent(url)}`);
-          const data = response.then((content) => content.data);
-          return data;
-        } catch (loadError) {
-          // Loading failed
-          loadingProcess.errors.push(error.message);
-          throw loadError;
-        }
-      };
-
       // Controller
       const { form, input } = elements;
 
       const handleSubmit = (e) => {
         e.preventDefault();
 
-        const value = new FormData(e.target).get('url');
-        state.form.fields.url = value;
+        const currentUrl = new FormData(e.target).get('url');
 
-        validateUrl(state.form.fields.url, state.feeds)
+        validateUrl(currentUrl, state.feeds)
           .then(() => {
             // Validation successful
             state.form.isValid = true;
             state.form.errors = {};
 
             // Load posts
-            loadPosts(state.form.fields.url).then((content) => {
-              const contentType = content.status.content_type;
-
-              if (contentType.startsWith('application/rss+xml')) {
-                state.form.errors = i18nInstance.t(`errors.rssLoaded`);
-
-                // If type is correct then parse
-                const parsedFeed = parse(content, state.form.fields.url);
+            loadPosts(currentUrl)
+              .then((responseResult) => {
+                // If query is in error
+                if (responseResult instanceof Error) {
+                  state.form.isValid = false;
+                  state.form.errors = i18nInstance.t('errors.responseError');
+                  console.log('Response error: ', responseResult.message);
+                }
+                // If query is successful
+                const parsedFeed = parse(responseResult, currentUrl);
                 const { feed, posts } = parsedFeed;
+                state.form.errors = i18nInstance.t('errors.rssLoaded');
 
+                // Change state
                 state.feeds.push(feed);
                 state.posts.push(...posts);
-              } else {
+              })
+              .catch((loadError) => {
                 state.form.isValid = false;
-                state.form.errors = i18nInstance.t(`errors.noValidRss`);
-              }
-            });
+                // If query wasn't in error and tried to load the data
+                if (Object.keys(state.form.errors).length === 0) {
+                  state.form.errors = i18nInstance.t('errors.noValidRss');
+                  console.log('Load error: ', loadError);
+                }
+              });
           })
           .catch((validationError) => {
             // Validation failed

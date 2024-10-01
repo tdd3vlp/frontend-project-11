@@ -3,8 +3,14 @@ import onChange from 'on-change';
 export default (elements, i18next, initialState) => {
   // Handle functions
   const changeLanguage = (language) => {
+    // eslint-disable-next-line consistent-return
     i18next.changeLanguage(language, (err, t) => {
-      const { heading, subheading, button, label } = elements;
+      const {
+        heading,
+        subheading,
+        button,
+        label,
+      } = elements;
 
       if (err) return console.log(err);
 
@@ -34,9 +40,7 @@ export default (elements, i18next, initialState) => {
   const handleFormErrors = (error) => {
     const { feedback } = elements;
 
-    // ! Меняем класс у ошибок в зависимости от
-    // ! валидности формы
-
+    // Define class
     if (initialState.form.isValid) {
       feedback.classList.add('text-success');
       feedback.classList.remove('text-danger');
@@ -45,7 +49,7 @@ export default (elements, i18next, initialState) => {
       feedback.classList.remove('text-success');
     }
 
-    // Выводим текст ошибок
+    // Show error message
     if (Object.keys(error).length === 0) {
       feedback.textContent = '';
     } else {
