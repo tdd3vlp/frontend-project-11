@@ -166,6 +166,26 @@ export default (elements, i18next, initialState) => {
     });
   };
 
+  const handleLoading = (value) => {
+    const { button, input } = elements;
+    switch (value) {
+      case 'loading':
+        button.disabled = true;
+        input.disabled = true;
+        break;
+      case 'success':
+        button.disabled = false;
+        input.disabled = false;
+        break;
+      case 'fail':
+        button.disabled = false;
+        input.disabled = false;
+        break;
+      default:
+        break;
+    }
+  };
+
   //  Render
   const render = () => (path, value) => {
     switch (path) {
@@ -174,6 +194,9 @@ export default (elements, i18next, initialState) => {
         break;
       case 'form.errors':
         handleFormErrors(value);
+        break;
+      case 'loadingProcess.currentStatus':
+        handleLoading(value);
         break;
       case 'form.activeLanguage':
         changeLanguage(value);
