@@ -5,11 +5,11 @@ export default {
     label: 'RSS Link',
     button: 'Add',
     errors: {
-      invalidRss: 'Enter correct URL',
+      invalidUrl: 'Enter correct URL',
       rssExists: 'URL already used...',
-      rssLoaded: 'RSS loaded successfuly',
-      noValidRss: "URL doesn't contain any valid RSS",
-      responseError: 'Network error',
+      validRss: 'RSS loaded successfuly',
+      invalidRss: "URL doesn't contain any valid RSS",
+      networkError: 'Network error',
     },
   },
 };

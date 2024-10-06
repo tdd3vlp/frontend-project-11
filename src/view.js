@@ -60,20 +60,36 @@ export default (elements, i18next, initialState) => {
   const renderPosts = (posts) => {
     const { postsContainer } = elements;
 
-    const card = document.createElement('div');
-    card.classList.add('card', 'border-0');
-    const cardBody = document.createElement('div');
-    cardBody.classList.add('card-body');
-    const ul = document.createElement('ul');
-    ul.classList.add('list-group', 'border-0', 'rounded-0');
+    let card = postsContainer.querySelector('.card');
 
-    const cardTitle = document.createElement('h2');
-    cardTitle.classList.add('card-title', 'h4');
-    cardTitle.textContent = 'Посты';
+    if (!card) {
+      card = document.createElement('div');
+      card.classList.add('card', 'border-0');
+
+      const cardBody = document.createElement('div');
+      cardBody.classList.add('card-body');
+
+      const cardTitle = document.createElement('h2');
+      cardTitle.classList.add('card-title', 'h4');
+      cardTitle.textContent = 'Посты';
+      cardBody.append(cardTitle);
+
+      card.append(cardBody);
+      postsContainer.append(card);
+    }
+
+    let ul = card.querySelector('ul');
+
+    if (!ul) {
+      ul = document.createElement('ul');
+      ul.classList.add('list-group', 'border-0', 'rounded-0');
+      card.append(ul);
+    }
+
+    ul.innerHTML = '';
 
     posts.forEach((post) => {
       const li = document.createElement('li');
-
       li.classList.add(
         'list-group-item',
         'd-flex',
@@ -102,25 +118,38 @@ export default (elements, i18next, initialState) => {
       li.append(link, button);
       ul.append(li);
     });
-
-    cardBody.append(cardTitle);
-    card.append(cardBody, ul);
-    postsContainer.append(card);
   };
 
   const renderFeeds = (feeds) => {
     const { feedsContainer } = elements;
 
-    const card = document.createElement('div');
-    card.classList.add('card', 'border-0');
-    const cardBody = document.createElement('div');
-    cardBody.classList.add('card-body');
-    const ul = document.createElement('ul');
-    ul.classList.add('list-group', 'border-0', 'rounded-0');
+    let card = feedsContainer.querySelector('.card');
 
-    const cardTitle = document.createElement('h2');
-    cardTitle.classList.add('card-title', 'h4');
-    cardTitle.textContent = 'Фиды';
+    if (!card) {
+      card = document.createElement('div');
+      card.classList.add('card', 'border-0');
+
+      const cardBody = document.createElement('div');
+      cardBody.classList.add('card-body');
+
+      const cardTitle = document.createElement('h2');
+      cardTitle.classList.add('card-title', 'h4');
+      cardTitle.textContent = 'Фиды';
+      cardBody.append(cardTitle);
+
+      card.append(cardBody);
+      feedsContainer.append(card);
+    }
+
+    let ul = card.querySelector('ul');
+
+    if (!ul) {
+      ul = document.createElement('ul');
+      ul.classList.add('list-group', 'border-0', 'rounded-0');
+      card.append(ul);
+    }
+
+    ul.innerHTML = '';
 
     feeds.forEach((feed) => {
       const li = document.createElement('li');
@@ -135,10 +164,6 @@ export default (elements, i18next, initialState) => {
       li.append(h3, p);
       ul.append(li);
     });
-
-    cardBody.append(cardTitle);
-    card.append(cardBody, ul);
-    feedsContainer.append(card);
   };
 
   //  Render
