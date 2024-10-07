@@ -1,4 +1,5 @@
 import onChange from 'on-change';
+import { has } from 'lodash';
 
 export default (elements, i18next, initialState) => {
   // Handle functions
@@ -57,6 +58,26 @@ export default (elements, i18next, initialState) => {
     }
   };
 
+  const handleSeenPosts = (seenPosts) => {
+    const { postsContainer, modalTitle, modalBody } = elements;
+    const links = postsContainer.querySelectorAll('a');
+
+    links.forEach((link) => {
+      const { id } = link.dataset;
+      const currentPost = seenPosts.find((post) => post.id === id);
+
+      if (currentPost) {
+        link.classList.add('fw-normal');
+        link.classList.add('link-secondary');
+        link.classList.remove('fw-bold');
+        modalTitle.textContent = currentPost.title;
+        modalBody.textContent = currentPost.description;
+      } else {
+        link.classList.add('fw-bold');
+      }
+    });
+  };
+
   const renderPosts = (posts) => {
     const { postsContainer } = elements;
 
@@ -103,7 +124,6 @@ export default (elements, i18next, initialState) => {
       link.setAttribute('href', post.link);
       link.setAttribute('target', '_blank');
       link.setAttribute('rel', 'noopener noreferrer');
-      link.classList.add('fw-bold');
       link.dataset.id = post.id;
       link.textContent = post.title;
 
@@ -118,6 +138,8 @@ export default (elements, i18next, initialState) => {
       li.append(link, button);
       ul.append(li);
     });
+
+    handleSeenPosts(initialState.uiState.seenPosts);
   };
 
   const renderFeeds = (feeds) => {
@@ -200,6 +222,9 @@ export default (elements, i18next, initialState) => {
         break;
       case 'form.activeLanguage':
         changeLanguage(value);
+        break;
+      case 'uiState.seenPosts':
+        handleSeenPosts(value);
         break;
       case 'posts':
         renderPosts(value);

@@ -58,7 +58,7 @@ export default () => {
           errors: [],
         },
         uiState: {
-          seenPosts: {},
+          seenPosts: [],
         },
         feeds: [],
         posts: [],
@@ -128,6 +128,7 @@ export default () => {
           .then(() => {
             handleSuccessfulSubmit();
             state.loadingProcess.currentStatus = state.loadingProcess.status.loading;
+
             fetchPosts(currentUrl)
               .then((content) => {
                 state.loadingProcess.currentStatus = state.loadingProcess.status.success;
@@ -143,6 +144,16 @@ export default () => {
                 state.feeds.push(feed);
                 state.posts.push(...posts);
 
+                const { postsContainer } = elements;
+
+                postsContainer.addEventListener('click', (event) => {
+                  if (event.target.matches('button')) {
+                    const { id } = event.target.dataset;
+                    const post = state.posts.find((p) => p.id === id);
+                    state.uiState.seenPosts.push(post);
+                  }
+                });
+
                 setTimeout(updatePosts, 5000);
               })
               .catch((parseError) => {
@@ -154,7 +165,6 @@ export default () => {
           })
           .catch((urlValidationError) => handleFailedSubmit(urlValidationError));
       };
-
       form.addEventListener('submit', handleSubmit);
     })
     .catch((error) => {

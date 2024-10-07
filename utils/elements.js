@@ -8,4 +8,7 @@ export default {
   subheading: document.querySelector('.lead'),
   feedback: document.querySelector('.feedback'),
   button: document.querySelector('button[type="submit"]'),
+  modalTitle: document.querySelector('.modal-title'),
+  modalBody: document.querySelector('.modal-body'),
+  previewButtons: document.querySelectorAll('button[type="button"]'),
 };
