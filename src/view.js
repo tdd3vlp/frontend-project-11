@@ -1,5 +1,4 @@
 import onChange from 'on-change';
-import { has } from 'lodash';
 
 export default (elements, i18next, initialState) => {
   // Handle functions
@@ -58,131 +57,145 @@ export default (elements, i18next, initialState) => {
     }
   };
 
-  const handleSeenPosts = (seenPosts) => {
-    const { postsContainer, modalTitle, modalBody } = elements;
-    const links = postsContainer.querySelectorAll('a');
+  const buildCard = (type) => {
+    const card = document.createElement('div');
+    card.classList.add('card', 'border-0');
+    const cardBody = document.createElement('div');
+    cardBody.classList.add('card-body');
+    const cardTitle = document.createElement('h2');
+    cardTitle.classList.add('card-title', 'h4');
 
-    links.forEach((link) => {
-      const { id } = link.dataset;
-      const currentPost = seenPosts.find((post) => post.id === id);
+    switch (type) {
+      case 'post':
+        cardTitle.textContent = 'Посты';
+        break;
+      case 'feed':
+        cardTitle.textContent = 'Фиды';
+        break;
+      default:
+        break;
+    }
+    cardBody.append(cardTitle);
+    card.append(cardBody);
 
-      if (currentPost) {
-        link.classList.add('fw-normal');
-        link.classList.add('link-secondary');
-        link.classList.remove('fw-bold');
-        modalTitle.textContent = currentPost.title;
-        modalBody.textContent = currentPost.description;
-      } else {
-        link.classList.add('fw-bold');
-      }
-    });
+    return card;
   };
 
-  const renderPosts = (posts) => {
+  const buildList = () => {
+    const ul = document.createElement('ul');
+    ul.classList.add('list-group', 'border-0', 'rounded-0');
+    return ul;
+  };
+
+  const buildListItem = (type) => {
+    const li = document.createElement('li');
+
+    switch (type) {
+      case ('post'):
+        li.classList.add(
+          'list-group-item',
+          'd-flex',
+          'justify-content-between',
+          'align-items-start',
+          'border-0',
+          'border-end-0',
+        );
+        break;
+      case 'feed':
+        li.classList.add(
+          'list-group-item',
+          'border-0',
+          'border-end-0',
+        );
+        break;
+      default:
+        break;
+    }
+
+    return li;
+  };
+
+  const buildLink = (post) => {
+    const link = document.createElement('a');
+    link.classList.add('fw-bold');
+    link.setAttribute('href', post.link);
+    link.setAttribute('target', '_blank');
+    link.setAttribute('rel', 'noopener noreferrer');
+    link.dataset.id = post.id;
+    link.textContent = post.title;
+
+    return link;
+  };
+
+  const buildButton = (post) => {
+    const button = document.createElement('button');
+    button.classList.add('btn', 'btn-outline-primary', 'btn-sm');
+    button.setAttribute('type', 'button');
+    button.dataset.id = post.id;
+    button.dataset.bsToggle = 'modal';
+    button.dataset.bsTarget = '#modal';
+    button.textContent = 'Просмотр';
+
+    return button;
+  };
+
+  const buildTitle = (feed) => {
+    const h3 = document.createElement('h3');
+    h3.classList.add('h6', 'm-0');
+    h3.textContent = feed.title;
+
+    return h3;
+  };
+
+  const buildDescription = (feed) => {
+    const p = document.createElement('p');
+    p.classList.add('m-0', 'small', 'text-black-50');
+    p.textContent = feed.description;
+
+    return p;
+  };
+
+  const renderNewPosts = (posts) => {
     const { postsContainer } = elements;
-
-    let card = postsContainer.querySelector('.card');
-
-    if (!card) {
-      card = document.createElement('div');
-      card.classList.add('card', 'border-0');
-
-      const cardBody = document.createElement('div');
-      cardBody.classList.add('card-body');
-
-      const cardTitle = document.createElement('h2');
-      cardTitle.classList.add('card-title', 'h4');
-      cardTitle.textContent = 'Посты';
-      cardBody.append(cardTitle);
-
-      card.append(cardBody);
+    postsContainer.innerHTML = '';
+    const isCardRendered = postsContainer.querySelector('.card');
+    const card = buildCard('post');
+    if (!isCardRendered) {
       postsContainer.append(card);
     }
-
-    let ul = card.querySelector('ul');
-
-    if (!ul) {
-      ul = document.createElement('ul');
-      ul.classList.add('list-group', 'border-0', 'rounded-0');
+    const isListGroupRendered = card.querySelector('ul');
+    const ul = buildList();
+    if (!isListGroupRendered) {
       card.append(ul);
     }
-
     ul.innerHTML = '';
-
     posts.forEach((post) => {
-      const li = document.createElement('li');
-      li.classList.add(
-        'list-group-item',
-        'd-flex',
-        'justify-content-between',
-        'align-items-start',
-        'border-0',
-        'border-end-0',
-      );
-
-      const link = document.createElement('a');
-      link.setAttribute('href', post.link);
-      link.setAttribute('target', '_blank');
-      link.setAttribute('rel', 'noopener noreferrer');
-      link.dataset.id = post.id;
-      link.textContent = post.title;
-
-      const button = document.createElement('button');
-      button.classList.add('btn', 'btn-outline-primary', 'btn-sm');
-      button.setAttribute('type', 'button');
-      button.dataset.id = post.id;
-      button.dataset.bsToggle = 'modal';
-      button.dataset.bsTarget = '#modal';
-      button.textContent = 'Просмотр';
-
+      const li = buildListItem('post');
+      const link = buildLink(post);
+      const button = buildButton(post);
       li.append(link, button);
       ul.append(li);
     });
-
-    handleSeenPosts(initialState.uiState.seenPosts);
   };
 
-  const renderFeeds = (feeds) => {
+  const renderNewFeeds = (feeds) => {
     const { feedsContainer } = elements;
-
-    let card = feedsContainer.querySelector('.card');
-
-    if (!card) {
-      card = document.createElement('div');
-      card.classList.add('card', 'border-0');
-
-      const cardBody = document.createElement('div');
-      cardBody.classList.add('card-body');
-
-      const cardTitle = document.createElement('h2');
-      cardTitle.classList.add('card-title', 'h4');
-      cardTitle.textContent = 'Фиды';
-      cardBody.append(cardTitle);
-
-      card.append(cardBody);
+    feedsContainer.innerHTML = '';
+    const isCardRendered = feedsContainer.querySelector('.card');
+    const card = buildCard('feed');
+    if (!isCardRendered) {
       feedsContainer.append(card);
     }
-
-    let ul = card.querySelector('ul');
-
-    if (!ul) {
-      ul = document.createElement('ul');
-      ul.classList.add('list-group', 'border-0', 'rounded-0');
+    const isListGroupRendered = card.querySelector('ul');
+    const ul = buildList();
+    if (!isListGroupRendered) {
       card.append(ul);
     }
-
     ul.innerHTML = '';
-
     feeds.forEach((feed) => {
-      const li = document.createElement('li');
-      li.classList.add('list-group-item', 'border-0', 'border-end-0');
-      const h3 = document.createElement('h3');
-      h3.classList.add('h6', 'm-0');
-      h3.textContent = feed.title;
-      const p = document.createElement('p');
-      p.classList.add('m-0', 'small', 'text-black-50');
-      p.textContent = feed.description;
-
+      const li = buildListItem('feed');
+      const h3 = buildTitle(feed);
+      const p = buildDescription(feed);
       li.append(h3, p);
       ul.append(li);
     });
@@ -208,6 +221,28 @@ export default (elements, i18next, initialState) => {
     }
   };
 
+  const renderSeenPosts = (seenPosts) => {
+    const { postsContainer, modalTitle, modalBody } = elements;
+    const links = postsContainer.querySelectorAll('a');
+
+    if (seenPosts.length > 0) {
+      const currentPostId = seenPosts.at(-1);
+      const currentPost = initialState.posts.find((post) => post.id === currentPostId);
+      modalTitle.textContent = currentPost.title;
+      modalBody.textContent = currentPost.description;
+
+      links.forEach((link) => {
+        const { id } = link.dataset;
+        if (seenPosts.includes(id)) {
+          link.classList.remove('fw-bold');
+          link.classList.add('fw-normal', 'link-secondary');
+        } else {
+          link.classList.add('fw-bold');
+        }
+      });
+    }
+  };
+
   //  Render
   const render = () => (path, value) => {
     switch (path) {
@@ -224,13 +259,14 @@ export default (elements, i18next, initialState) => {
         changeLanguage(value);
         break;
       case 'uiState.seenPosts':
-        handleSeenPosts(value);
+        renderSeenPosts(value);
         break;
       case 'posts':
-        renderPosts(value);
+        renderNewPosts(value);
+        renderSeenPosts(initialState.uiState.seenPosts);
         break;
       case 'feeds':
-        renderFeeds(value);
+        renderNewFeeds(value);
         break;
       default:
         break;

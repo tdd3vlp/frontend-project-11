@@ -102,7 +102,7 @@ export default () => {
             const newPosts = updatedPosts.filter((post) => !state.posts
               .some((existingPost) => existingPost.title === post.title));
 
-            if (updatedPosts.length > 0) {
+            if (newPosts.length > 0) {
               state.posts.unshift(...newPosts);
             }
           })
@@ -142,17 +142,7 @@ export default () => {
                 state.form.errors = i18nInstance.t('errors.validRss');
 
                 state.feeds.push(feed);
-                state.posts.push(...posts);
-
-                const { postsContainer } = elements;
-
-                postsContainer.addEventListener('click', (event) => {
-                  if (event.target.matches('button')) {
-                    const { id } = event.target.dataset;
-                    const post = state.posts.find((p) => p.id === id);
-                    state.uiState.seenPosts.push(post);
-                  }
-                });
+                state.posts.unshift(...posts);
 
                 setTimeout(updatePosts, 5000);
               })
@@ -166,6 +156,14 @@ export default () => {
           .catch((urlValidationError) => handleFailedSubmit(urlValidationError));
       };
       form.addEventListener('submit', handleSubmit);
+      const { postsContainer } = elements;
+
+      postsContainer.addEventListener('click', (event) => {
+        if (event.target.matches('button')) {
+          const { id } = event.target.dataset;
+          state.uiState.seenPosts.push(id);
+        }
+      });
     })
     .catch((error) => {
       console.log('i18next initialization error', error);
