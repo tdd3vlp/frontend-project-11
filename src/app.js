@@ -73,6 +73,7 @@ export default () => {
       const handleSuccessfulSubmit = () => {
         state.form.isValid = true;
         state.form.errors = {};
+        state.loadingProcess.currentStatus = state.loadingProcess.status.loading;
       };
 
       const handleFailedSubmit = (urlValidationError) => {
@@ -119,31 +120,27 @@ export default () => {
           });
       };
 
+      const resetForm = () => {
+        form.reset();
+        input.focus();
+      };
+
       const handleSubmit = (e) => {
         e.preventDefault();
-
         const currentUrl = new FormData(e.target).get('url');
-
         validateUrl(currentUrl, state.feeds)
           .then(() => {
             handleSuccessfulSubmit();
-            state.loadingProcess.currentStatus = state.loadingProcess.status.loading;
-
             fetchPosts(currentUrl)
               .then((content) => {
                 state.loadingProcess.currentStatus = state.loadingProcess.status.success;
-                form.reset();
-                input.focus();
+                resetForm();
 
                 const { feed, posts } = parse(content.data, currentUrl);
-                const feedId = uniqueId();
-                feed.id = feedId;
-
+                const newFeed = { ...feed, id: uniqueId() };
                 state.form.errors = i18nInstance.t('errors.validRss');
-
-                state.feeds.push(feed);
+                state.feeds.push(newFeed);
                 state.posts.unshift(...posts);
-
                 setTimeout(updatePosts, 5000);
               })
               .catch((parseError) => {
@@ -155,6 +152,7 @@ export default () => {
           })
           .catch((urlValidationError) => handleFailedSubmit(urlValidationError));
       };
+
       form.addEventListener('submit', handleSubmit);
       const { postsContainer } = elements;
 

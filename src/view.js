@@ -2,25 +2,6 @@ import onChange from 'on-change';
 
 export default (elements, i18next, initialState) => {
   // Handle functions
-  const changeLanguage = (language) => {
-    // eslint-disable-next-line consistent-return
-    i18next.changeLanguage(language, (err, t) => {
-      const {
-        heading,
-        subheading,
-        button,
-        label,
-      } = elements;
-
-      if (err) return console.log(err);
-
-      label.textContent = t('label');
-      button.textContent = t('button');
-      heading.textContent = t('heading');
-      subheading.textContent = t('subheading');
-    });
-  };
-
   const handleFormState = (value) => {
     const { input } = elements;
     switch (value) {
@@ -155,20 +136,7 @@ export default (elements, i18next, initialState) => {
     return p;
   };
 
-  const renderNewPosts = (posts) => {
-    const { postsContainer } = elements;
-    postsContainer.innerHTML = '';
-    const isCardRendered = postsContainer.querySelector('.card');
-    const card = buildCard('post');
-    if (!isCardRendered) {
-      postsContainer.append(card);
-    }
-    const isListGroupRendered = card.querySelector('ul');
-    const ul = buildList();
-    if (!isListGroupRendered) {
-      card.append(ul);
-    }
-    ul.innerHTML = '';
+  const renderPostsList = (posts, ul) => {
     posts.forEach((post) => {
       const li = buildListItem('post');
       const link = buildLink(post);
@@ -178,20 +146,7 @@ export default (elements, i18next, initialState) => {
     });
   };
 
-  const renderNewFeeds = (feeds) => {
-    const { feedsContainer } = elements;
-    feedsContainer.innerHTML = '';
-    const isCardRendered = feedsContainer.querySelector('.card');
-    const card = buildCard('feed');
-    if (!isCardRendered) {
-      feedsContainer.append(card);
-    }
-    const isListGroupRendered = card.querySelector('ul');
-    const ul = buildList();
-    if (!isListGroupRendered) {
-      card.append(ul);
-    }
-    ul.innerHTML = '';
+  const renderFeedsList = (feeds, ul) => {
     feeds.forEach((feed) => {
       const li = buildListItem('feed');
       const h3 = buildTitle(feed);
@@ -199,6 +154,32 @@ export default (elements, i18next, initialState) => {
       li.append(h3, p);
       ul.append(li);
     });
+  };
+
+  const renderItems = (items, type, container) => {
+    const itemContainer = container;
+    itemContainer.innerHTML = '';
+    const isCardRendered = itemContainer.querySelector('.card');
+    const card = buildCard('post');
+    if (!isCardRendered) {
+      itemContainer.append(card);
+    }
+    const isListGroupRendered = card.querySelector('ul');
+    const ul = buildList();
+    if (!isListGroupRendered) {
+      card.append(ul);
+    }
+    ul.innerHTML = '';
+    switch (type) {
+      case 'posts':
+        renderPostsList(items, ul);
+        break;
+      case 'feeds':
+        renderFeedsList(items, ul);
+        break;
+      default:
+        break;
+    }
   };
 
   const handleLoading = (value) => {
@@ -255,18 +236,15 @@ export default (elements, i18next, initialState) => {
       case 'loadingProcess.currentStatus':
         handleLoading(value);
         break;
-      case 'form.activeLanguage':
-        changeLanguage(value);
-        break;
       case 'uiState.seenPosts':
         renderSeenPosts(value);
         break;
       case 'posts':
-        renderNewPosts(value);
+        renderItems(value, 'posts', elements.postsContainer);
         renderSeenPosts(initialState.uiState.seenPosts);
         break;
       case 'feeds':
-        renderNewFeeds(value);
+        renderItems(value, 'feeds', elements.feedsContainer);
         break;
       default:
         break;
