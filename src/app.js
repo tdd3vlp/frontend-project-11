@@ -94,7 +94,7 @@ export default () => {
       const updatePosts = () => {
         const promises = state.feeds.map((feed) => fetchPosts(feed.url)
           .then((content) => {
-            const { posts } = parse(content.data, feed.url);
+            const { posts } = parse(content.data, feed.url, uniqueId);
             const updatedPosts = posts.map((p) => ({
               ...p,
               feedId: feed.id,
@@ -136,7 +136,7 @@ export default () => {
                 state.loadingProcess.currentStatus = state.loadingProcess.status.success;
                 resetForm();
 
-                const { feed, posts } = parse(content.data, currentUrl);
+                const { feed, posts } = parse(content.data, currentUrl, uniqueId);
                 const newFeed = { ...feed, id: uniqueId() };
                 state.form.errors = i18nInstance.t('errors.validRss');
                 state.feeds.push(newFeed);
