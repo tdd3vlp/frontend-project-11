@@ -87,7 +87,7 @@ export default () => {
         .then((content) => content)
         .catch((networkError) => {
           state.form.isValid = false;
-          state.form.errors = i18nInstance.t('errors.networkError');
+          state.form.errors = { error: networkError, isNetworkError: true };
           console.log('Response error: ', networkError.message);
         });
 
@@ -125,6 +125,27 @@ export default () => {
         input.focus();
       };
 
+      const handleSuccessfulFetch = (content, url) => {
+        state.loadingProcess.currentStatus = state.loadingProcess.status.success;
+        resetForm();
+        const { feed, posts } = parse(content.data, url, uniqueId);
+        const newFeed = { ...feed, id: uniqueId() };
+        state.form.errors = i18nInstance.t('errors.validRss');
+        state.feeds.push(newFeed);
+        state.posts.unshift(...posts);
+      };
+
+      const handleFailedFetch = (error) => {
+        state.loadingProcess.currentStatus = state.loadingProcess.status.fail;
+        state.form.isValid = false;
+        if (state.form.errors.isNetworkError) {
+          state.form.errors = i18nInstance.t('errors.networkError');
+        } else {
+          state.form.errors = i18nInstance.t('errors.invalidRss');
+          console.log('Parsing error: ', error);
+        }
+      };
+
       const handleSubmit = (e) => {
         e.preventDefault();
         const currentUrl = new FormData(e.target).get('url');
@@ -133,21 +154,11 @@ export default () => {
             handleSuccessfulSubmit();
             fetchPosts(currentUrl)
               .then((content) => {
-                state.loadingProcess.currentStatus = state.loadingProcess.status.success;
-                resetForm();
-
-                const { feed, posts } = parse(content.data, currentUrl, uniqueId);
-                const newFeed = { ...feed, id: uniqueId() };
-                state.form.errors = i18nInstance.t('errors.validRss');
-                state.feeds.push(newFeed);
-                state.posts.unshift(...posts);
+                handleSuccessfulFetch(content, currentUrl);
                 setTimeout(updatePosts, 5000);
               })
               .catch((parseError) => {
-                state.loadingProcess.currentStatus = state.loadingProcess.status.fail;
-                state.form.isValid = false;
-                state.form.errors = i18nInstance.t('errors.invalidRss');
-                console.log('Parsing error: ', parseError);
+                handleFailedFetch(parseError);
               });
           })
           .catch((urlValidationError) => handleFailedSubmit(urlValidationError));

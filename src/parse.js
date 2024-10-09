@@ -17,7 +17,6 @@ export default (content, url) => {
 
   // Posts
   const items = xmlDoc.querySelectorAll('item');
-  console.log(xmlDoc);
   const posts = Array.from(items).map((item) => {
     const title = item.querySelector('title');
     const description = item.querySelector('description');
