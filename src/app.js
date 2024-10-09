@@ -83,7 +83,7 @@ export default () => {
       };
 
       const fetchPosts = (url) => axios
-        .get(`https://allorigins.hexlet.app/get?url=${encodeURIComponent(url)}`)
+        .get(`https://allorigins.hexlet.app/get?disableCache=true&url=${encodeURIComponent(url)}`)
         .then((content) => content)
         .catch((networkError) => {
           state.form.isValid = false;
