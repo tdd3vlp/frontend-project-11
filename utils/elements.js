@@ -10,5 +10,6 @@ export default {
   button: document.querySelector('button[type="submit"]'),
   modalTitle: document.querySelector('.modal-title'),
   modalBody: document.querySelector('.modal-body'),
+  modalFooter: document.querySelector('.modal-footer'),
   previewButtons: document.querySelectorAll('button[type="button"]'),
 };

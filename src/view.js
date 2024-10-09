@@ -203,7 +203,12 @@ export default (elements, i18next, initialState) => {
   };
 
   const renderSeenPosts = (seenPosts) => {
-    const { postsContainer, modalTitle, modalBody } = elements;
+    const {
+      postsContainer,
+      modalTitle,
+      modalBody,
+      modalFooter,
+    } = elements;
     const links = postsContainer.querySelectorAll('a');
 
     if (seenPosts.length > 0) {
@@ -211,6 +216,8 @@ export default (elements, i18next, initialState) => {
       const currentPost = initialState.posts.find((post) => post.id === currentPostId);
       modalTitle.textContent = currentPost.title;
       modalBody.textContent = currentPost.description;
+      const fullArticleButton = modalFooter.querySelector('.full-article');
+      fullArticleButton.setAttribute('href', currentPost.link);
 
       links.forEach((link) => {
         const { id } = link.dataset;
