@@ -1,4 +1,5 @@
 import HtmlWebpackPlugin from 'html-webpack-plugin';
+import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -9,6 +10,13 @@ const __dirname = path.dirname(__filename);
 export default {
   mode: process.env.NODE_ENV || 'development',
   entry: './src/index.js',
+  plugins: [
+    new HtmlWebpackPlugin({
+      template: './index.html',
+      filename: 'index.html',
+    }),
+    new MiniCssExtractPlugin(),
+  ],
   module: {
     rules: [
       {
@@ -26,7 +34,7 @@ export default {
       {
         test: /\.scss$/,
         use: [
-          'style-loader',
+          MiniCssExtractPlugin.loader,
           'css-loader',
           'sass-loader',
           {
@@ -49,23 +57,17 @@ export default {
       },
     ],
   },
-  plugins: [
-    new HtmlWebpackPlugin({
-      template: './index.html',
-      filename: 'index.html',
-    }),
-  ],
   output: {
     filename: '[name].[contenthash].js',
     path: path.resolve(__dirname, 'dist'),
     clean: true,
   },
   devServer: {
+    open: true,
     static: {
       directory: path.resolve(__dirname, 'dist'),
     },
     hot: true,
-    open: true,
     compress: true,
     port: 9000,
     watchFiles: ['src/**/*', 'index.html'],

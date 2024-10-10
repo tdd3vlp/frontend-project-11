@@ -1,7 +1,5 @@
-import { uniqueId } from 'lodash';
-
 // eslint-disable-next-line consistent-return
-export default (content, url) => {
+export default (content, url, generateId) => {
   const { contents } = content;
   const parser = new DOMParser();
   const xmlDoc = parser.parseFromString(contents, 'application/xml');
@@ -23,7 +21,7 @@ export default (content, url) => {
     const link = item.querySelector('link');
 
     return {
-      id: uniqueId(),
+      id: generateId(),
       title: title.textContent,
       description: description.textContent,
       link: link.textContent,
