@@ -2,8 +2,11 @@ export default {
   translation: {
     heading: 'RSS Агрегатор',
     subheading: 'Начните читать RSS сегодня! Это легко, это красиво.',
+    feeds: 'Фиды',
+    posts: 'Посты',
     label: 'Ссылка RSS',
-    button: 'Добавить',
+    addButton: 'Добавить',
+    previewButton: 'Просмотр',
     errors: {
       invalidUrl: 'Ссылка должна быть валидным URL',
       rssExists: 'RSS уже существует',

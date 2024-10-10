@@ -48,10 +48,10 @@ export default (elements, i18next, initialState) => {
 
     switch (type) {
       case 'post':
-        cardTitle.textContent = 'Посты';
+        cardTitle.textContent = i18next.t('posts');
         break;
       case 'feed':
-        cardTitle.textContent = 'Фиды';
+        cardTitle.textContent = i18next.t('feeds');
         break;
       default:
         break;
@@ -115,7 +115,7 @@ export default (elements, i18next, initialState) => {
     button.dataset.id = post.id;
     button.dataset.bsToggle = 'modal';
     button.dataset.bsTarget = '#modal';
-    button.textContent = 'Просмотр';
+    button.textContent = i18next.t('previewButton');
 
     return button;
   };
@@ -160,7 +160,8 @@ export default (elements, i18next, initialState) => {
     const itemContainer = container;
     itemContainer.innerHTML = '';
     const isCardRendered = itemContainer.querySelector('.card');
-    const card = buildCard('post');
+    const itemsType = type === 'posts' ? 'post' : 'feed';
+    const card = buildCard(itemsType);
     if (!isCardRendered) {
       itemContainer.append(card);
     }
