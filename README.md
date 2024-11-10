@@ -1,19 +1,26 @@
-### Hexlet Tests and Linter Status:
+### Статус Hexlet теста и линтера:
 
 [![Actions Status](https://github.com/tdd3vlp/frontend-project-11/actions/workflows/hexlet-check.yml/badge.svg)](https://github.com/tdd3vlp/frontend-project-11/actions)
 [![Maintainability](https://api.codeclimate.com/v1/badges/9f0c5840ba3f9d6fde5f/maintainability)](https://codeclimate.com/github/tdd3vlp/frontend-project-11/maintainability)
 
-Deploy:
+Деплой:
 https://rssaggregator-three.vercel.app/
 
-Project name: RSS Aggregator
+### Название проекта: 'RSS-Агрегатор'
 
-Project description: an application that allows you to add different RSS feeds and load the posts they include.
-The app automatically updates posts every 5 seconds so they're always up-to-date.
+### Описание проекта:
+Веб-приложение для агрегации контента из различных RSS-источников с автоматическим обновлением, которое позволяет пользователю следить за актуальными новостями и обновлениями из разных каналов в одном месте. “RSS-агрегатор” автоматически собирает и отображает новые посты из подключенных RSS-каналов, позволяя пользователям добавлять несколько источников и следить за обновлениями в режиме реального времени.
 
-Instructions:
+- Технологический стек: JavaScript, Axios для работы с запросами к API, Bootstrap для адаптивного и стильного интерфейса, i18next для интернационализации, Yup для валидации данных, Lodash для манипуляции данными, Webpack для сборки и разработки, on-change для отслеживания изменений в состоянии приложения.
+- Основные функции:
+  - Добавление RSS-источников: Пользователь может добавить один или несколько RSS-каналов, чтобы получать обновления от разных источников.
+	-	Автоматическое обновление: Приложение регулярно обновляет содержимое каждого канала, позволяя пользователю всегда видеть свежие данные без необходимости перезагрузки.
+	-	Валидация ввода: С использованием библиотеки Yup обеспечивается проверка корректности добавляемых ссылок.
+	-	Интернационализация: Поддержка нескольких языков с помощью i18next, что делает приложение удобным для пользователей из разных стран.
+-	Интересные особенности: Приложение собрано с использованием Webpack, что позволяет эффективно управлять зависимостями и улучшает производительность. Axios обрабатывает запросы к RSS-каналам, а on-change помогает автоматически отслеживать изменения в состоянии, обеспечивая плавный и отзывчивый интерфейс. Bootstrap отвечает за стильное оформление и адаптивность интерфейса, что улучшает пользовательский опыт.
 
-1. Enter a valid URL to load the posts;
-2. Push the _Preview_ button to show the content of the selected post.
+### Установка и запуск: 
 
-Feel free to add as many feeds as you want to see the news you're interested in.
+1. Введите валидный URL, чтобы загрузить посты.
+2. Нажмите на кнопку _Preview_, чтобы отобразить содержание выбранного поста.
+
